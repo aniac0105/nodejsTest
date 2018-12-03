@@ -11,36 +11,40 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // 사용자 정보 입력 받기
 app.get('/topic/new', (req, res)=>{
-    res.render('new')
-})
-
-app.get('/topic/:topic', (req, res)=>{
-    var topic = req.params.topic
-    fs.readFile('data/'+topic, 'utf8', (err, data)=>{
-        if(err){
-            console.log(err)
-            res.status(500).send('Internal server error')
-        }
-        fs.readdir('data', (err, files)=>{
-            if(err){
-                console.log(err)
-                res.status(500).send('Internal server error')
-            }
-            res.render('view', {topics:files, title:topic, description:data})
-        })
-    })
-})
-
-app.get('/topic', (req, res)=>{
-
     fs.readdir('data', (err, files)=>{
         if(err){
             console.log(err)
             res.status(500).send('Internal server error')
         }
-        res.render('view', {topics:files})
+        res.render('new', {topics:files})
     })
-    
+})
+
+// 리스트 보여 주고 사용자가 원하는 페이지로 이동 처리
+app.get(['/topic', '/topic/:id'], (req, res)=>{
+    fs.readdir('data', (err, files)=>{
+        if(err){
+            console.log(err)
+            res.status(500).send('Internal server error')
+        }
+        var result = {topics:files}
+        var id = req.params.id  
+        if(id) {
+            fs.readFile('data/'+id, 'utf8', (err, data)=>{
+                if(err){
+                    console.log(err)
+                    res.status(500).send('Internal server error')
+                }
+                result['title'] = id
+                result['description'] = data
+                res.render('view', result)
+            })
+        } else {
+            result['title'] = 'Hello~'
+            result['description'] = 'welcome ~'
+            res.render('view', result)
+        }
+    })
 })
 
 // 전달받은 form data를 파일로 저장
@@ -53,7 +57,7 @@ app.post('/topic', (req, res)=>{
             console.log(err)
             res.status(500).send('Internal server error')
         }
-        res.send('success!!!')
+        res.redirect('/topic/'+title)
     })
 })
 
