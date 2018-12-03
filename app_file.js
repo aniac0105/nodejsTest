@@ -1,6 +1,16 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var fs = require('fs')
+var multer  = require('multer')
+var storage = multer.diskStorage({
+    destination: (req, file, cb)=>{
+        cb(null, 'uploads/')
+    },
+    filename: (req, file, cb)=>{
+        cb(null, file.originalname)
+    }
+})
+var upload = multer({ storage: storage })
 var app = express()
 app.locals.pretty=true
 app.set('views', './views_file')
@@ -8,6 +18,7 @@ app.set('view engine', 'pug')
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use('/user', express.static('uploads'))
 
 // 사용자 정보 입력 받기
 app.get('/topic/new', (req, res)=>{
@@ -59,6 +70,15 @@ app.post('/topic', (req, res)=>{
         }
         res.redirect('/topic/'+title)
     })
+})
+
+app.get('/upload', (req, res)=>{
+    res.render('upload')
+})
+
+app.post('/upload', upload.single('userfile'), (req, res)=>{
+    var file = req.file
+    res.redirect('/user/'+req.file.originalname)
 })
 
 app.listen(3000, ()=>console.log('connected, 3000 port!!!'))
