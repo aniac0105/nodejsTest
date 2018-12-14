@@ -1,0 +1,29 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    body
+        h1 
+            a(href='/topic') Server Side JavaScript
+        ul
+            each item in topics
+                li
+                    - rid = encodeURIComponent(item['@rid'])
+                    a(href='/topic/'+rid)= item.title
+        artcle
+            if topic
+                h2= topic.title
+                = topic.description
+                div= 'by '+topic.author
+                - topic_rid = encodeURIComponent(topic['@rid'])
+            else
+                h2 Welcome
+                | This is server side .....
+        ul
+            li 
+                a(href='/topic/add') [새글]
+            if topic
+                li
+                    a(href='/topic/'+topic_rid+'/edit') [편집]
+                li
+                    a(href='/topic/delete/'+topic_rid) [삭제]
