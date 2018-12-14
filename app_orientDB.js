@@ -67,7 +67,6 @@ app.get('/topic/delete/:id', (req, res)=>{
     }
 })
 
-// 리스트 보여 주고 사용자가 원하는 페이지로 이동 처리
 app.get(['/topic', '/topic/:id'], (req, res)=>{
     var sql = 'select from topic'
     db.query(sql).then((results)=>{
@@ -87,14 +86,12 @@ app.post('/topic/add', (req, res)=>{
     var title = req.body.title
     var description = req.body.description
     var author = req.body.author
-
-    res.send(req.body)
     
     var sql = 'insert into topic (title, description, author) values(:title, :desc, :author)'
     db.query(sql, {params:{
         title:title, 
         desc:description, 
-        autohr:author}
+        author:author}
     }).then((results)=>{
         res.redirect('/topic/'+encodeURIComponent(results[0]['@rid']))
     })
